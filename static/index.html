@@ -1,0 +1,1191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VeriFact | Separate facts from fiction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Caveat:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05060f;
+        --text: #f1f4ff;
+        --muted: #a7b0cc;
+        --violet: #8b7bff;
+        --blue: #6c8cff;
+        --pink: #e06bff;
+        --mint: #7ee7d2;
+        --line: rgba(160, 175, 255, 0.22);
+        --glass: rgba(18, 22, 46, 0.55);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        font-family: Sora, "Segoe UI", Arial, sans-serif;
+        background: radial-gradient(
+          ellipse at 70% 30%,
+          #141a45 0,
+          #07091a 55%,
+          #03040a 100%
+        );
+        color: var(--text);
+        overflow: hidden;
+      }
+      #gl {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        transition: opacity 1s ease;
+      }
+      .ws #gl {
+        opacity: 0.3;
+      }
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px clamp(18px, 4vw, 56px);
+      }
+      .brand {
+        font-weight: 800;
+        font-size: 26px;
+        letter-spacing: -1px;
+        background: linear-gradient(90deg, #b7a8ff, #7fa0ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        cursor: pointer;
+        border: 0;
+        padding: 0;
+        font-family: inherit;
+      }
+      .ghost {
+        font: inherit;
+        font-size: 14px;
+        color: var(--text);
+        background: var(--glass);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 11px 22px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+      }
+      .ghost:hover {
+        border-color: var(--violet);
+      }
+      button:focus-visible,
+      a:focus-visible,
+      textarea:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--mint);
+        outline-offset: 3px;
+      }
+      .hero {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 84px clamp(20px, 5vw, 80px) 64px;
+        pointer-events: none;
+        transition:
+          opacity 0.6s,
+          transform 0.9s;
+      }
+      .hero > * {
+        pointer-events: auto;
+      }
+      .ws .hero {
+        opacity: 0;
+        transform: scale(1.06);
+        pointer-events: none;
+      }
+      .ws .hero > * {
+        pointer-events: none;
+      }
+      .tag {
+        align-self: flex-start;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 12.5px;
+        color: #cfd6ff;
+        border: 1px solid var(--line);
+        background: var(--glass);
+        border-radius: 999px;
+        padding: 8px 16px;
+        backdrop-filter: blur(8px);
+      }
+      h1 {
+        font-size: clamp(42px, min(5.4vw, 9.4vh), 92px);
+        line-height: 1;
+        letter-spacing: -0.045em;
+        margin: 20px 0 16px;
+        font-weight: 800;
+        max-width: 7em;
+      }
+      h1 .g1 {
+        background: linear-gradient(90deg, #7c8cff, #b36bff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      h1 .g2 {
+        background: linear-gradient(90deg, #a56bff, #ff6bd6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .lede {
+        max-width: min(420px, 42vw);
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: clamp(15px, 1.35vw, 17px);
+        margin: 0;
+      }
+      .cta-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-top: 26px;
+        max-width: min(560px, 46vw);
+      }
+      .cta {
+        font: inherit;
+        font-weight: 600;
+        font-size: 16px;
+        color: #fff;
+        border: 0;
+        border-radius: 999px;
+        padding: 17px 34px;
+        cursor: pointer;
+        background: linear-gradient(90deg, #4f7cff, #a46bff);
+        box-shadow:
+          0 0 34px #6c7bff77,
+          inset 0 0 0 1px #ffffff40;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .cta:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 0 52px #8b7bffaa,
+          inset 0 0 0 1px #ffffff66;
+      }
+      .note {
+        font-family: Caveat, cursive;
+        font-size: 21px;
+        color: #c9cfee;
+        line-height: 1.1;
+        max-width: 190px;
+        transform: rotate(-4deg);
+      }
+      .chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+        max-width: min(600px, 46vw);
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        background: var(--glass);
+        border-radius: 14px;
+        backdrop-filter: blur(10px);
+        font-size: 13px;
+        line-height: 1.3;
+      }
+      .chip svg {
+        width: 22px;
+        height: 22px;
+        stroke: #a99bff;
+        fill: none;
+        stroke-width: 1.6;
+        flex: none;
+      }
+      .chip small {
+        display: block;
+        color: var(--muted);
+        font-size: 11.5px;
+      }
+      .foot {
+        position: fixed;
+        left: clamp(20px, 5vw, 80px);
+        bottom: 22px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: #8d97b8;
+        font-size: 11.5px;
+        letter-spacing: 0.2em;
+        transition: opacity 0.5s;
+      }
+      .foot i {
+        flex: 1;
+        max-width: 340px;
+        height: 1px;
+        background: var(--line);
+      }
+      .ws .foot {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .flash {
+        position: fixed;
+        inset: 0;
+        z-index: 9;
+        pointer-events: none;
+        opacity: 0;
+        background: radial-gradient(
+          circle at 70% 45%,
+          #cfd6ff,
+          #7c6bff 35%,
+          transparent 70%
+        );
+      }
+      .flash.go {
+        animation: fl 1.1s ease;
+      }
+      @keyframes fl {
+        0% {
+          opacity: 0;
+        }
+        35% {
+          opacity: 0.85;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      #work {
+        position: fixed;
+        inset: 0;
+        z-index: 4;
+        overflow-y: auto;
+        padding: 90px 20px 60px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(30px) scale(0.98);
+        transition:
+          opacity 0.7s,
+          transform 0.7s,
+          visibility 0s 0.7s;
+      }
+      .ws #work {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition:
+          opacity 0.8s 0.6s,
+          transform 0.8s 0.6s,
+          visibility 0s 0.6s;
+      }
+      .shell {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      .shell h2 {
+        font-size: clamp(28px, 4vw, 40px);
+        letter-spacing: -0.03em;
+        margin: 0 0 8px;
+      }
+      .shell > p {
+        color: var(--muted);
+        margin: 0 0 20px;
+        line-height: 1.6;
+      }
+      .panel {
+        background: rgba(12, 16, 36, 0.78);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 22px;
+        margin-top: 16px;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 0 60px #6c7bff18;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 9px;
+        font-size: 14px;
+      }
+      textarea,
+      input,
+      select {
+        width: 100%;
+        color: var(--text);
+        background: #080c1d;
+        border: 1px solid #2c3a62;
+        border-radius: 12px;
+        padding: 14px;
+        font: inherit;
+        font-size: 15px;
+      }
+      textarea {
+        min-height: 190px;
+        resize: vertical;
+        line-height: 1.6;
+      }
+      textarea:focus,
+      input:focus,
+      select:focus {
+        border-color: var(--violet);
+        box-shadow: 0 0 0 3px #8b7bff2b;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 16px;
+      }
+      #analyzeBtn {
+        margin-top: 18px;
+        width: 100%;
+      }
+      #analyzeBtn:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+      .status {
+        display: none;
+        margin-top: 16px;
+        padding: 13px 15px;
+        border-radius: 12px;
+        background: #141c3a;
+        color: #dce5ff;
+        line-height: 1.5;
+      }
+      .hidden {
+        display: none;
+      }
+      .summary {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 18px 0;
+      }
+      .stat {
+        background: #0a0f24;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .stat small {
+        color: var(--muted);
+        display: block;
+        margin-bottom: 8px;
+      }
+      .stat strong {
+        font-size: 24px;
+      }
+      .claim {
+        border: 1px solid var(--line);
+        background: #0a0f24;
+        border-radius: 14px;
+        padding: 16px;
+        margin-top: 12px;
+      }
+      .claim-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .claim-text {
+        font-weight: 600;
+        line-height: 1.5;
+      }
+      .pill {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+        border: 1px solid;
+      }
+      .SUPPORTED {
+        background: #0f3a2e;
+        color: #8ef0c9;
+        border-color: #2fbf8f;
+      }
+      .CONTRADICTED {
+        background: #4a1f2a;
+        color: #ffb3be;
+        border-color: #ff6b86;
+      }
+      .UNVERIFIED {
+        background: #463916;
+        color: #ffdf91;
+        border-color: #e0b43a;
+      }
+      .explanation {
+        color: var(--muted);
+        line-height: 1.6;
+        margin: 12px 0;
+      }
+      .sources {
+        margin-top: 12px;
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+      .sources a {
+        color: #b4bfff;
+        text-decoration: none;
+      }
+      .sources a:hover {
+        text-decoration: underline;
+      }
+      .source {
+        margin: 9px 0;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .source p {
+        color: #9eabc4;
+        margin: 4px 0 0;
+      }
+      .disclaimer {
+        font-size: 12px;
+        color: #94a2bd;
+        line-height: 1.6;
+        margin-top: 18px;
+      }
+      .nogl body,
+      .nogl {
+        background: radial-gradient(circle at 70% 40%, #2a2f7a, #07091a 60%);
+      }
+      @media (max-width: 760px) {
+        .row,
+        .stats {
+          grid-template-columns: 1fr;
+        }
+        .hero {
+          justify-content: flex-start;
+          padding-top: 96px;
+        }
+        h1 {
+          font-size: clamp(40px, 12vw, 60px);
+          margin: 18px 0 14px;
+        }
+        .note {
+          display: none;
+        }
+        .chips {
+          gap: 8px;
+          max-width: 100%;
+        }
+        .chip {
+          padding: 8px 11px;
+          font-size: 12px;
+        }
+        .chip small {
+          display: none;
+        }
+        .foot {
+          display: none;
+        }
+        .claim-top {
+          flex-direction: column;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .flash.go {
+          animation: none;
+        }
+        #work,
+        .hero,
+        #gl {
+          transition-duration: 0.01s !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gl" aria-hidden="true"></canvas>
+
+    <header>
+      <button class="brand" id="home" aria-label="VeriFact home">
+        VeriFact
+      </button>
+      <button class="ghost" id="topCta">Get started</button>
+    </header>
+
+    <section class="hero" id="hero">
+      <span class="tag">✦ AI fact-checking</span>
+      <h1>
+        Separate <span class="g1">Facts</span> from
+        <span class="g2">Fiction</span>
+      </h1>
+      <p class="lede">
+        VeriFact uses web evidence and advanced AI to analyze claims, detect
+        hallucinations, and show you what's real.
+      </p>
+      <div class="cta-row">
+        <button class="cta" id="start">Start analyzing →</button>
+        <span class="note">Paste any text and let VeriFact do the rest!</span>
+      </div>
+      <div class="chips">
+        <div class="chip">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="M16 16l5 5" /></svg
+          ><span>Verifies claims<small>with real web sources</small></span>
+        </div>
+        <div class="chip">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8" />
+            <path d="M12 4v16M4 12h16" /></svg
+          ><span>Detects<small>AI hallucinations</small></span>
+        </div>
+        <div class="chip">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 3h9l4 4v14H6z" />
+            <path d="M9 12h7M9 16h7" /></svg
+          ><span>Clear, source-backed<small>explanations</small></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="foot">REAL EVIDENCE. CLEAR ANSWERS.<i></i></div>
+    <div class="flash" id="flash"></div>
+
+    <main id="work" aria-label="Analysis workspace">
+      <div class="shell">
+        <h2>Check a text, claim by claim</h2>
+        <p>
+          Paste an AI-generated answer. VeriFact pulls out each checkable claim,
+          searches the web, and shows the evidence.
+        </p>
+
+        <section class="panel">
+          <label for="text">Text to verify</label>
+          <textarea
+            id="text"
+            placeholder="Paste an AI-generated answer, paragraph, or explanation here..."
+          ></textarea>
+          <div class="hint">
+            Works best with specific facts, dates and figures. Up to 12,000
+            characters.
+          </div>
+          <div class="row">
+            <div>
+              <label for="context">Topic (optional)</label
+              ><input
+                id="context"
+                placeholder="e.g. computer science, Indian history"
+              />
+            </div>
+            <div>
+              <label for="example">Try an example</label>
+              <select id="example">
+                <option value="">Choose an example...</option>
+                <option
+                  value="The capital of Australia is Sydney. The Great Wall of China is visible from the Moon with the naked eye. Water boils at about 100 degrees Celsius at sea level."
+                >
+                  Simple factual claims
+                </option>
+                <option
+                  value="Python was first released in 1991. Java was created by James Gosling at Sun Microsystems. HTML is a programming language used to implement algorithms."
+                >
+                  Programming facts
+                </option>
+              </select>
+            </div>
+          </div>
+          <button class="cta" id="analyzeBtn">Check claims →</button>
+          <div id="status" class="status" role="status"></div>
+        </section>
+
+        <section id="results" class="panel hidden">
+          <h2 style="font-size: 24px">Results</h2>
+          <p id="summary" class="summary"></p>
+          <div class="stats">
+            <div class="stat">
+              <small>Contradicted claims</small><strong id="score">—</strong>
+            </div>
+            <div class="stat">
+              <small>Claims reviewed</small><strong id="claimCount">—</strong>
+            </div>
+            <div class="stat">
+              <small>Time taken</small><strong id="time">—</strong>
+            </div>
+          </div>
+          <div id="claims"></div>
+          <p class="disclaimer">
+            This is a prototype, not a guarantee of truth. Search results can be
+            incomplete or unreliable. "Unverified" means the evidence was not
+            enough, not that the claim is false. Open the sources before relying
+            on a result.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const cam = {
+        x: 0,
+        tx: 0,
+        z: 10.5,
+        y: 2.3,
+        tz: 10.5,
+        ty: 2.3,
+        spin: 0,
+        tspin: 0,
+      };
+      const view = { worldX: 0 };
+      let mx = 0,
+        my = 0;
+
+      /* ---------- 3D scene ---------- */
+      function init3D() {
+        const canvas = $("gl");
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
+          antialias: true,
+          alpha: true,
+        });
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x05060f, 0.035);
+        const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+        const world = new THREE.Group();
+        scene.add(world);
+
+        scene.add(new THREE.AmbientLight(0x6070ff, 0.5));
+        const key = new THREE.PointLight(0x8b7bff, 3, 20);
+        key.position.set(0, 6, 3);
+        scene.add(key);
+        const rim = new THREE.PointLight(0x7ee7d2, 1.6, 14);
+        rim.position.set(-4, 1, 3);
+        scene.add(rim);
+
+        const glowTex = (c1, c2) => {
+          const c = document.createElement("canvas");
+          c.width = c.height = 128;
+          const g = c.getContext("2d"),
+            r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+          r.addColorStop(0, c1);
+          r.addColorStop(1, c2);
+          g.fillStyle = r;
+          g.fillRect(0, 0, 128, 128);
+          return new THREE.CanvasTexture(c);
+        };
+
+        // platform
+        const dark = new THREE.MeshStandardMaterial({
+          color: 0x0b1030,
+          metalness: 0.85,
+          roughness: 0.35,
+        });
+        [
+          [3.6, 0.3, 0],
+          [2.9, 0.25, 0.28],
+          [1.7, 0.2, 0.5],
+        ].forEach(([r, h, y]) => {
+          const m = new THREE.Mesh(
+            new THREE.CylinderGeometry(r, r + 0.1, h, 64),
+            dark,
+          );
+          m.position.y = y;
+          world.add(m);
+        });
+        [
+          [3.62, 0x6c8cff, 0.16],
+          [2.92, 0xb36bff, 0.4],
+          [1.72, 0x7ee7d2, 0.6],
+        ].forEach(([r, col, y]) => {
+          const t = new THREE.Mesh(
+            new THREE.TorusGeometry(r, 0.022, 8, 96),
+            new THREE.MeshBasicMaterial({ color: col }),
+          );
+          t.rotation.x = Math.PI / 2;
+          t.position.y = y;
+          world.add(t);
+        });
+        const pool = new THREE.Mesh(
+          new THREE.PlaneGeometry(14, 14),
+          new THREE.MeshBasicMaterial({
+            map: glowTex("rgba(120,130,255,.55)", "rgba(120,130,255,0)"),
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+          }),
+        );
+        pool.rotation.x = -Math.PI / 2;
+        pool.position.y = -0.05;
+        world.add(pool);
+
+        // light beam
+        const beam = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.1, 1.5, 7, 48, 1, true),
+          new THREE.ShaderMaterial({
+            transparent: true,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            vertexShader:
+              "varying vec2 v;void main(){v=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
+            fragmentShader:
+              "varying vec2 v;void main(){float a=pow(1.-v.y,1.8)*.24;gl_FragColor=vec4(mix(vec3(.45,.55,1.),vec3(.75,.5,1.),v.y),a);}",
+          }),
+        );
+        beam.position.y = 3.9;
+        world.add(beam);
+
+        // rings + orbit
+        const rings = [];
+        [
+          [3.5, 5.7, 0.03],
+          [2.7, 5.25, 0.018],
+        ].forEach(([r, y, t]) => {
+          const m = new THREE.Mesh(
+            new THREE.TorusGeometry(r, t, 8, 128),
+            new THREE.MeshBasicMaterial({
+              color: 0xa9b6ff,
+              transparent: true,
+              opacity: 0.8,
+            }),
+          );
+          m.rotation.x = Math.PI / 2 + 0.12;
+          m.position.y = y;
+          world.add(m);
+          rings.push(m);
+        });
+        const orbit = new THREE.Group();
+        orbit.rotation.set(1.25, 0.1, -0.3);
+        orbit.position.y = 2.7;
+        world.add(orbit);
+        const pts = [];
+        for (let i = 0; i <= 128; i++) {
+          const a = (i / 128) * Math.PI * 2;
+          pts.push(new THREE.Vector3(Math.cos(a) * 5.4, Math.sin(a) * 2.2, 0));
+        }
+        orbit.add(
+          new THREE.LineLoop(
+            new THREE.BufferGeometry().setFromPoints(pts),
+            new THREE.LineBasicMaterial({
+              color: 0x8b9cff,
+              transparent: true,
+              opacity: 0.55,
+            }),
+          ),
+        );
+        const dot = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: glowTex("#fff", "rgba(150,160,255,0)"),
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          }),
+        );
+        dot.scale.set(0.5, 0.5, 1);
+        orbit.add(dot);
+
+        // holographic cards
+        const wrap = (g, t, x, y, w, lh) => {
+          let line = "";
+          t.split(" ").forEach((word) => {
+            const test = line + word + " ";
+            if (g.measureText(test).width > w && line) {
+              g.fillText(line, x, y);
+              line = word + " ";
+              y += lh;
+            } else line = test;
+          });
+          g.fillText(line, x, y);
+        };
+        const rr = (g, x, y, w, h, r) => {
+          g.beginPath();
+          g.moveTo(x + r, y);
+          g.arcTo(x + w, y, x + w, y + h, r);
+          g.arcTo(x + w, y + h, x, y + h, r);
+          g.arcTo(x, y + h, x, y, r);
+          g.arcTo(x, y, x + w, y, r);
+          g.closePath();
+        };
+        const cardTex = (text, bars) => {
+          const c = document.createElement("canvas");
+          c.width = 512;
+          c.height = 640;
+          const g = c.getContext("2d");
+          const f = g.createLinearGradient(0, 0, 512, 640);
+          f.addColorStop(0, "rgba(130,140,255,.30)");
+          f.addColorStop(1, "rgba(80,60,190,.18)");
+          rr(g, 6, 6, 500, 628, 28);
+          g.fillStyle = f;
+          g.fill();
+          g.lineWidth = 3;
+          g.strokeStyle = "rgba(190,200,255,.8)";
+          g.stroke();
+          ["#ff6b86", "#ffd36b", "#6bffb0"].forEach((col, i) => {
+            g.fillStyle = col;
+            g.beginPath();
+            g.arc(38 + i * 22, 38, 6, 0, 7);
+            g.fill();
+          });
+          g.fillStyle = "#fff";
+          g.font = "600 40px Sora, Arial";
+          wrap(g, "\u201C" + text + "\u201D", 40, 130, 430, 52);
+          bars.forEach((b, i) => {
+            const y = 340 + i * 56;
+            g.fillStyle = "rgba(255,255,255,.1)";
+            rr(g, 40, y, 430, 26, 8);
+            g.fill();
+            g.fillStyle = b[1];
+            rr(g, 40, y, 430 * b[0], 26, 8);
+            g.fill();
+          });
+          return new THREE.CanvasTexture(c);
+        };
+        const badgeTex = (label, col) => {
+          const c = document.createElement("canvas");
+          c.width = 420;
+          c.height = 130;
+          const g = c.getContext("2d");
+          rr(g, 8, 8, 404, 114, 30);
+          g.fillStyle = "rgba(10,12,30,.8)";
+          g.fill();
+          g.lineWidth = 5;
+          g.strokeStyle = col;
+          g.shadowColor = col;
+          g.shadowBlur = 20;
+          g.stroke();
+          g.shadowBlur = 0;
+          g.fillStyle = col;
+          g.font = "800 40px Sora, Arial";
+          g.textAlign = "center";
+          g.fillText(label, 210, 82);
+          return new THREE.CanvasTexture(c);
+        };
+        const cards = [];
+        const addCard = (txt, bars, label, col, x, y, z, w, h, ry, bx, by) => {
+          const grp = new THREE.Group();
+          grp.position.set(x, y, z);
+          grp.rotation.y = ry;
+          const m = new THREE.Mesh(
+            new THREE.PlaneGeometry(w, h),
+            new THREE.MeshBasicMaterial({
+              map: cardTex(txt, bars),
+              transparent: true,
+              side: THREE.DoubleSide,
+              depthWrite: false,
+            }),
+          );
+          const b = new THREE.Mesh(
+            new THREE.PlaneGeometry(1.7, 0.52),
+            new THREE.MeshBasicMaterial({
+              map: badgeTex(label, col),
+              transparent: true,
+              depthWrite: false,
+            }),
+          );
+          b.position.set(bx, by, 0.35);
+          grp.add(m, b);
+          world.add(grp);
+          cards.push({ grp, y, ph: Math.random() * 6 });
+        };
+        addCard(
+          "The Great Wall of China is visible from the Moon.",
+          [
+            [0.8, "#ff6bd6"],
+            [0.55, "#b36bff"],
+            [0.35, "#8b9cff"],
+          ],
+          "UNVERIFIED",
+          "#ffd36b",
+          0,
+          3.1,
+          0,
+          2.7,
+          3.37,
+          0,
+          1.55,
+          1.25,
+        );
+        addCard(
+          "The capital of Australia is Sydney.",
+          [
+            [0.7, "#ff6b86"],
+            [0.4, "#ff6b86"],
+          ],
+          "CONTRADICTED",
+          "#ff6b86",
+          -3.1,
+          2.3,
+          -0.5,
+          2,
+          2.5,
+          0.5,
+          -0.2,
+          -1.5,
+        );
+        addCard(
+          "Water boils at 100\u00B0C at sea level.",
+          [
+            [0.85, "#6bffb0"],
+            [0.5, "#6bffb0"],
+          ],
+          "SUPPORTED",
+          "#6bffb0",
+          3.2,
+          1.9,
+          -0.4,
+          2.1,
+          2.6,
+          -0.5,
+          0.4,
+          -1.6,
+        );
+
+        const gem = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.42),
+          new THREE.MeshStandardMaterial({
+            color: 0xcfd6ff,
+            emissive: 0x7c6bff,
+            emissiveIntensity: 1.4,
+            metalness: 0.6,
+            roughness: 0.2,
+          }),
+        );
+        gem.scale.y = 1.5;
+        gem.position.set(0, 1.55, 0.6);
+        world.add(gem);
+        const gemGlow = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: glowTex("rgba(150,150,255,.9)", "rgba(150,150,255,0)"),
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          }),
+        );
+        gemGlow.scale.set(3, 3, 1);
+        gemGlow.position.copy(gem.position);
+        world.add(gemGlow);
+
+        // dust
+        const n = 500,
+          pos = new Float32Array(n * 3);
+        for (let i = 0; i < n; i++) {
+          pos[i * 3] = (Math.random() - 0.5) * 22;
+          pos[i * 3 + 1] = Math.random() * 10 - 1;
+          pos[i * 3 + 2] = (Math.random() - 0.5) * 14;
+        }
+        const dustGeo = new THREE.BufferGeometry();
+        dustGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+        const dust = new THREE.Points(
+          dustGeo,
+          new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0xb9c3ff,
+            transparent: true,
+            opacity: 0.7,
+            depthWrite: false,
+          }),
+        );
+        scene.add(dust);
+
+        const resize = () => {
+          const w = innerWidth,
+            h = innerHeight;
+          renderer.setSize(w, h, false);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          const narrow = w / h < 0.95;
+          const visH = 2 * Math.tan(THREE.MathUtils.degToRad(21)) * 10.5,
+            visW = visH * camera.aspect;
+          const s = narrow
+            ? Math.min(0.9, (visW * 0.92) / 11)
+            : Math.min(1.05, (visH * 0.7) / 6.8, (visW * 0.52) / 11);
+          world.scale.setScalar(s);
+          world.position.x = narrow ? 0 : visW * 0.245;
+          world.position.y = narrow
+            ? 2.4 - 3.2 * s - visH * 0.2
+            : 2.4 - 3.2 * s + visH * 0.02;
+          view.worldX = world.position.x;
+        };
+        addEventListener("resize", resize);
+        resize();
+        addEventListener("pointermove", (e) => {
+          mx = e.clientX / innerWidth - 0.5;
+          my = e.clientY / innerHeight - 0.5;
+        });
+
+        const clock = new THREE.Clock();
+        (function loop() {
+          const t = clock.getElapsedTime();
+          cam.x += (cam.tx - cam.x) * 0.045;
+          cam.z += (cam.tz - cam.z) * 0.045;
+          cam.y += (cam.ty - cam.y) * 0.045;
+          cam.spin += (cam.tspin - cam.spin) * 0.04;
+          camera.position.set(cam.x + mx * 1.2, cam.y - my * 0.6, cam.z);
+          camera.lookAt(cam.x, 2.4, 0);
+          world.rotation.y = mx * 0.22 + cam.spin;
+          cards.forEach((c, i) => {
+            c.grp.position.y = c.y + Math.sin(t * 0.8 + c.ph) * 0.12;
+          });
+          gem.rotation.y = t * 0.9;
+          gemGlow.material.opacity = 0.75 + Math.sin(t * 2) * 0.2;
+          rings[0].rotation.z = t * 0.15;
+          rings[1].rotation.z = -t * 0.25;
+          orbit.rotation.z = -0.3 + t * 0.03;
+          dot.position.set(Math.cos(t * 0.7) * 5.4, Math.sin(t * 0.7) * 2.2, 0);
+          dust.rotation.y = t * 0.01;
+          beam.material.opacity = 1;
+          renderer.render(scene, camera);
+          requestAnimationFrame(loop);
+        })();
+      }
+      try {
+        init3D();
+      } catch (e) {
+        console.warn("3D unavailable:", e);
+        document.documentElement.classList.add("nogl");
+      }
+
+      /* ---------- landing <-> workspace ---------- */
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function enter() {
+        if (document.body.classList.contains("ws")) return;
+        const f = $("flash");
+        f.classList.remove("go");
+        void f.offsetWidth;
+        if (!reduce) f.classList.add("go");
+        cam.tz = reduce ? 10.5 : 2.6;
+        cam.ty = 2.9;
+        cam.tx = reduce ? 0 : view.worldX;
+        cam.tspin = reduce ? 0 : 0.5;
+        document.body.classList.add("ws");
+        setTimeout(() => $("text").focus({ preventScroll: true }), 1200);
+      }
+      function leave() {
+        document.body.classList.remove("ws");
+        cam.tz = 10.5;
+        cam.ty = 2.3;
+        cam.tx = 0;
+        cam.tspin = 0;
+        $("work").scrollTop = 0;
+      }
+      $("start").onclick = enter;
+      $("topCta").onclick = enter;
+      $("home").onclick = leave;
+      addEventListener("keydown", (e) => {
+        if (e.key === "Escape") leave();
+      });
+
+      /* ---------- analysis (same API as before) ---------- */
+      $("example").addEventListener("change", (e) => {
+        if (e.target.value) $("text").value = e.target.value;
+      });
+      const esc = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+
+      $("analyzeBtn").onclick = async () => {
+        const text = $("text").value.trim(),
+          context = $("context").value.trim();
+        const btn = $("analyzeBtn"),
+          status = $("status"),
+          results = $("results");
+        if (text.length < 20) {
+          status.style.display = "block";
+          status.textContent = "Enter at least 20 characters of text first.";
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = "Checking claims...";
+        status.style.display = "block";
+        status.textContent =
+          "Finding claims, searching the web for evidence, and comparing sources. This can take a little while.";
+        results.classList.add("hidden");
+        try {
+          const res = await fetch("/api/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, context: context || null }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.detail || "Something went wrong.");
+          $("summary").textContent = data.summary || "Analysis complete.";
+          $("score").textContent = data.hallucination_percentage + "%";
+          $("claimCount").textContent = data.claims.length;
+          $("time").textContent = data.analysis_time + "s";
+          const box = $("claims");
+          box.innerHTML = "";
+          if (!data.claims.length)
+            box.innerHTML =
+              '<p class="summary">No checkable claims were found in this text.</p>';
+          data.claims.forEach((c) => {
+            const src = (c.sources || [])
+              .map(
+                (s) =>
+                  `<div class="source"><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title || s.url)}</a><p>${esc(s.content || "")}</p></div>`,
+              )
+              .join("");
+            const el = document.createElement("article");
+            el.className = "claim";
+            el.innerHTML = `<div class="claim-top"><div class="claim-text">${esc(c.claim)}</div><span class="pill ${esc(c.verdict)}">${esc(c.verdict)}</span></div>
+        <div class="explanation">${esc(c.explanation)}<br><strong>Model confidence:</strong> ${Number(c.confidence)}%</div>
+        <div class="sources"><strong>Web evidence</strong>${src || '<p class="hint">No usable source links were returned for this claim.</p>'}</div>`;
+            box.appendChild(el);
+          });
+          results.classList.remove("hidden");
+          status.textContent =
+            "Done. Open the source links to check the evidence yourself.";
+          results.scrollIntoView({
+            behavior: reduce ? "auto" : "smooth",
+            block: "start",
+          });
+        } catch (err) {
+          status.textContent = "Error: " + err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Check claims →";
+        }
+      };
+    </script>
+  </body>
+</html>
