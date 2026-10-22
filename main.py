@@ -130,6 +130,34 @@ def search_web(query: str) -> list[dict]:
 
 
 
+def gemini_json(client, prompt, retries=4):
+    """Call Gemini, retry when it is busy, and fall back to a second model."""
+    models = [os.getenv("GEMINI_MODEL", "gemini-3.8-flash"), "gemini-2.5-flash"]
+    last = None
+    for attempt in range(retries):
+        for model in models:
+            try:
+                r = client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        response_mime_type="application/json",
+                    ),
+                )
+                text = re.sub(r"^```(?:json)?\s*|\s*```$", "", (r.text or "").strip())
+                return json.loads(text)
+            except Exception as e:
+                msg = str(e)
+                if any(k in msg for k in ("503", "429", "UNAVAILABLE", "overloaded", "RESOURCE_EXHAUSTED")):
+                    print(f"Gemini busy ({model}), attempt {attempt + 1}/{retries}")
+                    last = e
+                    continue
+                raise
+        time.sleep(2 ** attempt)
+    raise last
+
+
 @app.get("/")
 def home():
     return FileResponse("static/index.html")
@@ -176,15 +204,7 @@ Optional topic/context: {request.context or "Not provided"}
 Text:
 {text}
 """
-        extract_response = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=extract_prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.1,
-                response_mime_type="application/json",
-            ),
-        )
-        extracted = json.loads(re.sub(r"^```(?:json)?\s*|\s*```$", "", (extract_response.text or "").strip()))
+        extracted = gemini_json(client, extract_prompt)
         raw_claims = extracted.get("claims", [])
         raw_claims = [str(c).strip() for c in raw_claims if str(c).strip()][:8]
 
@@ -238,15 +258,7 @@ Original text:
 Retrieved evidence for each claim:
 {json.dumps(evidence_by_claim, ensure_ascii=False)}
 """
-        verify_response = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=verification_prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.1,
-                response_mime_type="application/json",
-            ),
-        )
-        verified = json.loads(re.sub(r"^```(?:json)?\s*|\s*```$", "", (verify_response.text or "").strip()))
+        verified = gemini_json(client, verification_prompt)
         verified_claims = verified.get("claims", [])
 
         # Attach source links to the matching claim.
@@ -298,9 +310,17 @@ Retrieved evidence for each claim:
     except requests.RequestException:
         raise HTTPException(status_code=502, detail="Could not reach the web search service. Check your internet connection.")
     except Exception as exc:
-        # Keep the details in the terminal, but show a friendly message in the browser.
+        error_text = str(exc)
         print("Analysis error:", repr(exc))
-        raise HTTPException(status_code=500, detail="Analysis failed. Check that both API keys are correct and try again.")
+        if any(k in error_text for k in ("503", "429", "UNAVAILABLE", "RESOURCE_EXHAUSTED")):
+            raise HTTPException(
+                status_code=503,
+                detail="The AI service is temporarily busy. Please try again shortly."
+            )
+        raise HTTPException(
+            status_code=500,
+            detail="Analysis failed. Check the backend terminal for details."
+        )
 
 
 if __name__ == "__main__":
